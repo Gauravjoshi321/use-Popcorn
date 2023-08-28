@@ -51,24 +51,36 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
+  const [movies, setMovies] = useState(tempMovieData);
+
   return (
     <>
-      <NavBar />
-      <Main />
+
+      <NavBar>
+        <SearchBar />
+        <p className="num-results">
+          Found <strong>{movies.length}</strong> results
+        </p>
+      </NavBar>
+
+      <Main>
+        <List>
+          <MovieList movies={movies} />
+        </List>
+        <MoviesCollectionAndList />
+      </Main>
+
     </>
   );
 }
 
 //////////////////////////////////////////////////////
 
-function NavBar({ movies }) {
+function NavBar({ children }) {
 
   return <nav className="nav-bar">
     <Logo />
-    <SearchBar />
-    <p className="num-results">
-      Found <strong>X</strong> results
-    </p>
+    {children}
   </nav>
 }
 
@@ -102,40 +114,41 @@ function Button({ setIsOpen, isOpen }) {
   </button>
 }
 
-function Main() {
+function Main({ children }) {
   return <main className="main">
-    <List />
-    <MoviesCollectionAndList />
+    {children}
   </main>
 }
 
-function List() {
-  const [movies, setMovies] = useState(tempMovieData);
+function List({ children }) {
   const [isOpen1, setIsOpen1] = useState(true);
 
   return <div className="box">
     <Button setIsOpen={setIsOpen1} isOpen={isOpen1} />
-    {isOpen1 && (
-      <ul className="list">
-        {movies?.map((movie) => (
-          <Movie movie={movie} />
-        ))}
-      </ul>
-    )}
+
+    {isOpen1 && children}
   </div>
 }
 
-function Movie({ movie }) {
-  return <li key={movie.imdbID}>
-    <img src={movie.Poster} alt={`${movie.Title} poster`} />
-    <h3>{movie.Title}</h3>
-    <div>
-      <p>
-        <span>🗓</span>
-        <span>{movie.Year}</span>
-      </p>
-    </div>
-  </li>
+function MovieList({ movies }) {
+  return <ul className="list">
+
+    {movies?.map((movie) => (
+      <li key={movie.imdbID}>
+
+        <img src={movie.Poster} alt={`${movie.Title} poster`} />
+        <h3>{movie.Title}</h3>
+
+        <div>
+          <p>
+            <span>🗓</span>
+            <span>{movie.Year}</span>
+          </p>
+        </div>
+
+      </li>
+    ))}
+  </ul>
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -150,7 +163,7 @@ function MoviesCollectionAndList() {
     {isOpen2 && (
       <>
         <SummaryMovies watched={watched} />
-        <WatchedMovies watched={watched} />
+        <MoviesCollection watched={watched} />
       </>
     )}
   </div>
@@ -184,7 +197,7 @@ function SummaryMovies({ watched }) {
   </div>
 }
 
-function WatchedMovies({ watched }) {
+function MoviesCollection({ watched }) {
   return <ul className="list">
     {watched.map((movie) => (
       <li key={movie.imdbID}>
