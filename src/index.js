@@ -18,13 +18,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <App />
-    {/* <StarRating maxRating={10} color={"#F28C28"} />
-
-    <StarRating maxRating={5} color={"grey"} size={24} messages={["Terrible", "Bad", "Ok", "Good", "Amazing"]} />
-
-    <StarRating maxRating={5} color={"green"} /> */}
-    {/* <Test /> */}
-  </React.StrictMode>
+  </React.StrictMode >
 );
 
 // If you want to start measuring performance in your app, pass a function
