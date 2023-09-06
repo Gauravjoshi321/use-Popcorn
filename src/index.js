@@ -1,29 +1,29 @@
 import React from 'react';
-import { useState } from "react"
+// import { useState } from "react"
 import ReactDOM from 'react-dom/client';
-// import './index.css';
-// import App from './App';
-import StarRating from './star';
+import './index.css';
+import App from './App';
+// import StarRating from './star';
 
-function Test() {
-  const [testRating, setTestRating] = useState(0);
+// function Test() {
+//   const [testRating, setTestRating] = useState(0);
 
-  return <div>
-    <StarRating setTestRating={setTestRating} />
-    <p>This movie has a rating of {testRating}</p>
-  </div>
-}
+//   return <div>
+//     <StarRating setTestRating={setTestRating} />
+//     <p>This movie has a rating of {testRating}</p>
+//   </div>
+// }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* <App /> */}
-    <StarRating maxRating={10} color={"#F28C28"} />
+    <App />
+    {/* <StarRating maxRating={10} color={"#F28C28"} />
 
     <StarRating maxRating={5} color={"grey"} size={24} messages={["Terrible", "Bad", "Ok", "Good", "Amazing"]} />
 
-    <StarRating maxRating={5} color={"green"} />
-    <Test />
+    <StarRating maxRating={5} color={"green"} /> */}
+    {/* <Test /> */}
   </React.StrictMode>
 );
 
