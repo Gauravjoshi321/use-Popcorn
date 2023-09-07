@@ -53,16 +53,21 @@ const average = (arr) =>
 const KEY = "2d1e77c8";
 
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
+  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const QUERY = "Interstellar"
 
   useEffect(() => {
     async function fetchMovies() {
-      fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=singh is king`)
+      setIsLoading(true);
+      fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${QUERY}`)
         .then(res => res.json())
         .then(data => {
           setMovies(data.Search)
           console.log(data.Search)
+          setIsLoading(false);
         });
     }
     fetchMovies();
@@ -80,9 +85,8 @@ export default function App() {
 
       <Main>
         <Box>
-          <MovieList movies={movies} />
+          {isLoading ? <Loader /> : <MovieList movies={movies} />}
         </Box>
-
         <Box>
           <SummaryMovies watched={watched} />
           <MoviesCollection watched={watched} />
@@ -94,6 +98,10 @@ export default function App() {
 }
 
 //////////////////////////////////////////////////////
+
+function Loader() {
+  return <p className="loader">Loading...</p>
+}
 
 function NavBar({ children }) {
 
