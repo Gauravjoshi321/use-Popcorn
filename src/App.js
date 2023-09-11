@@ -58,6 +58,18 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+
+
+  function handleSelectedId(id) {
+    selectedId === id
+      ? setSelectedId(null)
+      : setSelectedId(id);
+  }
+
+  function nullSelectedId() {
+    setSelectedId(null);
+  }
 
 
   useEffect(() => {
@@ -72,7 +84,8 @@ export default function App() {
 
         const data = await res.json();
 
-        if (data.Response === "False") throw new Error("Movie not found");
+        if (data.Response === 'False') throw new Error("Movie not found");
+        console.log(data);
 
         setMovies(data.Search)
 
@@ -105,13 +118,17 @@ export default function App() {
         <Box>
           {isLoading && <Loader />}
           {error && <ErrorMessage message={error} />}
-          {!isLoading && !error && <MovieList movies={movies} />}
+          {!isLoading && !error && <MovieList movies={movies} onSelectedId={handleSelectedId} />}
         </Box>
         <Box>
-          <SummaryMovies watched={watched} />
-          <MoviesCollection watched={watched} />
+          {selectedId
+            ? <MovieDetails selectedId={selectedId} />
+            : <>
+              <SummaryMovies watched={watched} />
+              <MoviesCollection watched={watched} />
+            </>}
         </Box>
-      </Main>
+      </Main >
     </>
   );
 }
@@ -199,28 +216,36 @@ function Box({ children }) {
 //   </div>
 // }
 
-function MovieList({ movies }) {
-  return <ul className="list">
+function MovieList({ movies, onSelectedId }) {
+  return <ul className="list list-movies">
 
     {movies?.map((movie) => (
-      <li key={movie.imdbID}>
-
-        <img src={movie.Poster} alt={`${movie.Title} poster`} />
-        <h3>{movie.Title}</h3>
-
-        <div>
-          <p>
-            <span>🗓</span>
-            <span>{movie.Year}</span>
-          </p>
-        </div>
-
-      </li>
+      <Movie movie={movie} onSelectedId={onSelectedId} key={movie.imdbID} />
     ))}
   </ul>
 }
 
+function Movie({ movie, onSelectedId }) {
+  return <li onClick={() => onSelectedId(movie.imdbID)}>
+
+    <img src={movie.Poster} alt={`${movie.Title} poster`} />
+    <h3>{movie.Title}</h3>
+
+    <div>
+      <p>
+        <span>🗓</span>
+        <span>{movie.Year}</span>
+      </p>
+    </div>
+
+  </li>
+}
+
 /////////////////////////////////////////////////////////////////////
+
+function MovieDetails({ selectedId }) {
+  return <div className="details">{selectedId}</div>
+}
 
 function SummaryMovies({ watched }) {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
