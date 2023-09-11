@@ -255,7 +255,7 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
   const [isLoading, setIsLoading] = useState(false);
   const [movie, setMovie] = useState({});
   const [userRating, setUserRating] = useState('');
-  const [selected, setSelected] = useState(false);
+  // const [selected, setSelected] = useState(false);
 
   function handleWatchedMovie() {
     const watchedMovie = {
@@ -271,17 +271,20 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
     onCloseMovie();
   }
 
-  function handleDuplication() {
-    if (watched.length > 0) {
-      watched.forEach(w => {
-        if (w.imdbID === selectedId) {
-          setSelected(true);
-          return;
-        }
-        else setSelected(false)
-      })
-    }
-  }
+  // function handleDuplication() {
+  //   if (watched.length > 0) {
+  //     watched.forEach(w => {
+  //       if (w.imdbID === selectedId) {
+  //         setSelected(true);
+  //         return;
+  //       }
+  //       else setSelected(false)
+  //     })
+  //   }
+  // }
+
+  const isWatched = watched.map(w => w.imdbID).includes(selectedId);
+  console.log(isWatched);
 
 
   useEffect(function () {
@@ -298,7 +301,7 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
     }
 
     getMovieDetails();
-    handleDuplication()
+    setUserRating('');
   }, [selectedId]);
 
   return <div className="details">
@@ -323,16 +326,24 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
 
           <section>
             <div className="rating">
-              <StarRating
-                maxRating={10}
-                size={22}
-                setTestRating={setUserRating}
-              />
+              {
+                !isWatched ?
+                  <>
+                    < StarRating
+                      maxRating={10}
+                      size={22}
+                      setTestRating={setUserRating}
+                    />
 
-              {!selected && (userRating > 0 && <button
-                className="btn-add"
-                onClick={handleWatchedMovie}
-              >+ Add to list</button>)}
+
+                    {userRating > 0 && <button
+                      className="btn-add"
+                      onClick={handleWatchedMovie}
+                    >+ Add to list</button>
+                    }
+                  </> :
+                  <p>You have rated this movie</p>
+              }
             </div>
             <p>
               <em>{movie.Plot}</em>
