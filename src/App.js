@@ -255,6 +255,7 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
   const [isLoading, setIsLoading] = useState(false);
   const [movie, setMovie] = useState({});
   const [userRating, setUserRating] = useState('');
+  const [selected, setSelected] = useState(false);
 
   function handleWatchedMovie() {
     const watchedMovie = {
@@ -268,16 +269,20 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
 
     onHandleAllWatchedMovies(watchedMovie);
     onCloseMovie();
-    handleDuplication();
   }
 
   function handleDuplication() {
-    const gaurav = watched.forEach(w => {
-      if (w.imdbID === selectedId) return true;
-      return false;
-    });
-    console.log(gaurav);
+    if (watched.length > 0) {
+      watched.forEach(w => {
+        if (w.imdbID === selectedId) {
+          setSelected(true);
+          return;
+        }
+        else setSelected(false)
+      })
+    }
   }
+
 
   useEffect(function () {
 
@@ -293,6 +298,7 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
     }
 
     getMovieDetails();
+    handleDuplication()
   }, [selectedId]);
 
   return <div className="details">
@@ -323,10 +329,10 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
                 setTestRating={setUserRating}
               />
 
-              {userRating > 0 && <button
+              {!selected && (userRating > 0 && <button
                 className="btn-add"
                 onClick={handleWatchedMovie}
-              >+ Add to list</button>}
+              >+ Add to list</button>)}
             </div>
             <p>
               <em>{movie.Plot}</em>
