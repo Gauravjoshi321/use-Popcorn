@@ -41,7 +41,7 @@ export default function StarRating({
 
   function handleRating(i) {
     setRating(i);
-    // setTestRating(i);
+    setTestRating && setTestRating(i);
   }
 
   return (

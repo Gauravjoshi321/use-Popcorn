@@ -55,7 +55,7 @@ const KEY = "2d1e77c8";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
@@ -70,6 +70,10 @@ export default function App() {
 
   function nullSelectedId() {
     setSelectedId(null);
+  }
+
+  function handleAllWatchedMovies(newlyWatched) {
+    setWatched(watched => ([...watched, newlyWatched]))
   }
 
 
@@ -121,7 +125,12 @@ export default function App() {
         </Box>
         <Box>
           {selectedId
-            ? <MovieDetails selectedId={selectedId} onCloseMovie={nullSelectedId} />
+            ? <MovieDetails
+              selectedId={selectedId}
+              onCloseMovie={nullSelectedId}
+              onHandleAllWatchedMovies={handleAllWatchedMovies}
+              watched={watched}
+            />
             : <>
               <SummaryMovies watched={watched} />
               <MoviesCollection watched={watched} />
@@ -242,16 +251,39 @@ function Movie({ movie, onSelectedId }) {
 
 /////////////////////////////////////////////////////////////////////
 
-function MovieDetails({ selectedId, onCloseMovie }) {
+function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watched }) {
   const [isLoading, setIsLoading] = useState(false);
   const [movie, setMovie] = useState({});
+  const [userRating, setUserRating] = useState('');
+
+  function handleWatchedMovie() {
+    const watchedMovie = {
+      Poster: movie.Poster,
+      Title: movie.Title,
+      imdbRating: movie.imdbRating,
+      imdbID: selectedId,
+      runtime: Number(movie.Runtime.split(' ').at(0)),
+      userRating
+    }
+
+    onHandleAllWatchedMovies(watchedMovie);
+    onCloseMovie();
+    handleDuplication();
+  }
+
+  function handleDuplication() {
+    const gaurav = watched.forEach(w => {
+      if (w.imdbID === selectedId) return true;
+      return false;
+    });
+    console.log(gaurav);
+  }
 
   useEffect(function () {
 
     async function getMovieDetails() {
       setIsLoading(true);
       const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`);
-      console.log(res);
 
       if (res.status !== 200) throw new Error("Something went wrong");
 
@@ -285,7 +317,16 @@ function MovieDetails({ selectedId, onCloseMovie }) {
 
           <section>
             <div className="rating">
-              <StarRating maxRating={10} size={22} />
+              <StarRating
+                maxRating={10}
+                size={22}
+                setTestRating={setUserRating}
+              />
+
+              {userRating > 0 && <button
+                className="btn-add"
+                onClick={handleWatchedMovie}
+              >+ Add to list</button>}
             </div>
             <p>
               <em>{movie.Plot}</em>
