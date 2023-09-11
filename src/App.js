@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import StarRating from "./star";
 
 const tempMovieData = [
   {
@@ -84,9 +85,7 @@ export default function App() {
 
         const data = await res.json();
 
-        if (data.Response === 'False') throw new Error("Movie not found");
-        console.log(data);
-
+        if (data.Search === undefined) throw new Error("Movie not found");
         setMovies(data.Search)
 
       } catch (err) {
@@ -122,7 +121,7 @@ export default function App() {
         </Box>
         <Box>
           {selectedId
-            ? <MovieDetails selectedId={selectedId} />
+            ? <MovieDetails selectedId={selectedId} onCloseMovie={nullSelectedId} />
             : <>
               <SummaryMovies watched={watched} />
               <MoviesCollection watched={watched} />
@@ -243,8 +242,60 @@ function Movie({ movie, onSelectedId }) {
 
 /////////////////////////////////////////////////////////////////////
 
-function MovieDetails({ selectedId }) {
-  return <div className="details">{selectedId}</div>
+function MovieDetails({ selectedId, onCloseMovie }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [movie, setMovie] = useState({});
+
+  useEffect(function () {
+
+    async function getMovieDetails() {
+      setIsLoading(true);
+      const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`);
+      console.log(res);
+
+      if (res.status !== 200) throw new Error("Something went wrong");
+
+      const data = await res.json();
+      setIsLoading(false);
+      setMovie(data);
+    }
+
+    getMovieDetails();
+  }, [selectedId]);
+
+  return <div className="details">
+    {
+      isLoading ? <Loader /> :
+        <>
+          <header>
+            <button className="btn-back" onClick={onCloseMovie}>&larr;</button>
+            <img src={movie.Poster} alt={`Poster of ${movie.Title} movie`} />
+            <div className="details-overview">
+              <h2>{movie.Title}</h2>
+              <p>
+                {movie.Released} &bull; {movie.Runtime}
+              </p>
+              <p>{movie.Genre}</p>
+              <p>
+                <span>⭐</span>
+                {movie.imdbRating} IMDB rating
+              </p>
+            </div>
+          </header>
+
+          <section>
+            <div className="rating">
+              <StarRating maxRating={10} size={22} />
+            </div>
+            <p>
+              <em>{movie.Plot}</em>
+            </p>
+            <p>Starring {movie.Actors}</p>
+            <p>Directed by {movie.Director}</p>
+          </section>
+        </>
+    }
+  </div>
 }
 
 function SummaryMovies({ watched }) {
