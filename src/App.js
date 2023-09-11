@@ -57,8 +57,8 @@ export default function App() {
   const [watched, setWatched] = useState(tempWatchedData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
 
-  const QUERY = "dhoom"
 
   useEffect(() => {
     async function fetchMovies() {
@@ -66,7 +66,7 @@ export default function App() {
       try {
         setError("");
         setIsLoading(true);
-        const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${QUERY}`);
+        const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
 
         if (res.status !== 200) throw new Error("Something went wrong");
 
@@ -78,19 +78,24 @@ export default function App() {
 
       } catch (err) {
         setError(err.message);
-        console.log(err);
       } finally {
         setIsLoading(false)
       }
     }
+    if (query.length < 2) {
+      setMovies([]);
+      setError("");
+      return;
+    }
+
     fetchMovies();
-  }, [])
+  }, [query])
 
   return (
     <>
 
       <NavBar>
-        <SearchBar />
+        <SearchBar query={query} setQuery={setQuery} />
         <p className="num-results">
           Found <strong>{movies.length}</strong> results
         </p>
@@ -107,7 +112,6 @@ export default function App() {
           <MoviesCollection watched={watched} />
         </Box>
       </Main>
-
     </>
   );
 }
@@ -139,15 +143,16 @@ function Logo() {
   </div>
 }
 
-function SearchBar() {
-  const [query, setQuery] = useState("");
+function SearchBar({ query, setQuery }) {
 
   return <input
     className="search"
     type="text"
     placeholder="Search movies..."
     value={query}
-    onChange={(e) => setQuery(e.target.value)}
+    onChange={(e) => {
+      setQuery(e.target.value)
+    }}
   />
 }
 
