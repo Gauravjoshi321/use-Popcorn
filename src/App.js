@@ -76,6 +76,11 @@ export default function App() {
     setWatched(watched => ([...watched, newlyWatched]))
   }
 
+  function handleDeleteWatched(id) {
+    const arr = watched.filter(movie => movie.imdbID !== id);
+    setWatched(arr);
+  }
+
 
   useEffect(() => {
     async function fetchMovies() {
@@ -133,7 +138,9 @@ export default function App() {
             />
             : <>
               <SummaryMovies watched={watched} />
-              <MoviesCollection watched={watched} />
+              <MoviesCollection
+                watched={watched}
+                onDeleteWatched={handleDeleteWatched} />
             </>}
         </Box>
       </Main >
@@ -370,21 +377,21 @@ function SummaryMovies({ watched }) {
       </p>
       <p>
         <span>⭐️</span>
-        <span>{avgImdbRating}</span>
+        <span>{avgImdbRating.toFixed(2)}</span>
       </p>
       <p>
         <span>🌟</span>
-        <span>{avgUserRating}</span>
+        <span>{avgUserRating.toFixed(2)}</span>
       </p>
       <p>
         <span>⏳</span>
-        <span>{avgRuntime} min</span>
+        <span>{avgRuntime.toFixed()} min</span>
       </p>
     </div>
   </div>
 }
 
-function MoviesCollection({ watched }) {
+function MoviesCollection({ watched, onDeleteWatched }) {
   return <ul className="list">
     {watched.map((movie) => (
       <li key={movie.imdbID}>
@@ -403,6 +410,12 @@ function MoviesCollection({ watched }) {
             <span>⏳</span>
             <span>{movie.runtime} min</span>
           </p>
+          <button
+            className="btn-delete"
+            onClick={() => onDeleteWatched(movie.imdbID)}
+          >
+            X
+          </button>
         </div>
       </li>
     ))}
