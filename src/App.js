@@ -263,6 +263,7 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
   const [movie, setMovie] = useState({});
   const [userRating, setUserRating] = useState('');
   // const [selected, setSelected] = useState(false);
+  const { Title } = movie;
 
   function handleWatchedMovie() {
     const watchedMovie = {
@@ -297,6 +298,7 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
   useEffect(function () {
 
     async function getMovieDetails() {
+      setUserRating('');
       setIsLoading(true);
       const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`);
 
@@ -308,8 +310,12 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
     }
 
     getMovieDetails();
-    setUserRating('');
   }, [selectedId]);
+
+  useEffect(() => {
+    if (!Title) return;
+    document.title = `Movie | ${Title}`;
+  }, [Title])
 
   return <div className="details">
     {
