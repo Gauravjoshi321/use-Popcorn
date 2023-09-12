@@ -83,12 +83,17 @@ export default function App() {
 
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchMovies() {
 
       try {
         setError("");
         setIsLoading(true);
-        const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+          { signal: controller.signal }
+        );
 
         if (res.status !== 200) throw new Error("Something went wrong");
 
@@ -96,21 +101,31 @@ export default function App() {
 
         if (data.Search === undefined) throw new Error("Movie not found");
         setMovies(data.Search)
+        setError("");
 
       } catch (err) {
-        setError(err.message);
+        if (err.name !== "AbortError") {
+          setError(err.message);
+        }
       } finally {
         setIsLoading(false)
       }
+      // Because this effect will be executed on initial mount.. and the query length will be 0.
     }
-    if (query.length < 2) {
+    if (query.length < 3) {
       setMovies([]);
       setError("");
       return;
     }
+    console.log("yes");
 
     fetchMovies();
-  }, [query])
+
+    return function () {
+      controller.abort();
+    }
+  },
+    [query])
 
   return (
     <>
