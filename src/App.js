@@ -292,7 +292,6 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
   // }
 
   const isWatched = watched.map(w => w.imdbID).includes(selectedId);
-  console.log(isWatched);
 
 
   useEffect(function () {
@@ -315,6 +314,11 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
   useEffect(() => {
     if (!Title) return;
     document.title = `Movie | ${Title}`;
+
+    return (() => {
+      document.title = "usePopcorn";
+      console.log(Title);
+    })
   }, [Title])
 
   return <div className="details">
