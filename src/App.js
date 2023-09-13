@@ -118,6 +118,7 @@ export default function App() {
       return;
     }
 
+    nullSelectedId();
     fetchMovies();
 
     return function () {
@@ -230,21 +231,6 @@ function Box({ children }) {
   </div>
 }
 
-// function MoviesCollectionAndList() {
-//   const [watched, setWatched] = useState(tempWatchedData);
-//   const [isOpen, setIsOpen] = useState(true);
-
-//   return <div className="box">
-//     <Button setIsOpen={setIsOpen} isOpen={isOpen} />
-
-//     {isOpen && (
-//       <>
-//         <SummaryMovies watched={watched} />
-//         <MoviesCollection watched={watched} />
-//       </>
-//     )}
-//   </div>
-// }
 
 function MovieList({ movies, onSelectedId }) {
   return <ul className="list list-movies">
