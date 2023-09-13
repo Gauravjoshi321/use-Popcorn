@@ -59,11 +59,15 @@ export default function App() {
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-  const [watched, setWatched] = useState([]);
-  // const [watched, setWatched] = useState(function () {
-  //   const data = localStorage.getItem("watched");
-  //   return JSON.parse(data);
-  // });
+
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    const data = localStorage.getItem("watched");
+    if (data)
+      return JSON.parse(data);
+
+    return [];
+  });
 
 
   function handleSelectedId(id) {
@@ -209,6 +213,11 @@ function Logo() {
 }
 
 function SearchBar({ query, setQuery }) {
+
+  // useEffect(function () {
+  //   const sBar = document.querySelector('.search');
+  //   sBar.focus();
+  // }, [])
 
   return <input
     className="search"
