@@ -310,15 +310,19 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
       imdbRating: movie.imdbRating,
       imdbID: selectedId,
       runtime: Number(movie.Runtime.split(' ').at(0)),
-      userRating
+      userRating,
+      countUserRated: countRef.current
     }
-
     onHandleAllWatchedMovies(watchedMovie);
     onCloseMovie();
   }
 
   const isWatched = watched.map(w => w.imdbID).includes(selectedId);
 
+  const countRef = useRef(0);
+  useEffect(function () {
+    if (userRating) countRef.current++;
+  }, [userRating])
 
   useEffect(function () {
     const fun = function (e) {
