@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./star";
+import { useMovies } from "./useMovies";
 
 // const tempMovieData = [
 //   {
@@ -54,9 +55,6 @@ const average = (arr) =>
 const KEY = "2d1e77c8";
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
@@ -68,6 +66,8 @@ export default function App() {
 
     return [];
   });
+
+  const { movies, isLoading, error } = useMovies(query);
 
 
   function handleSelectedId(id) {
@@ -101,52 +101,6 @@ export default function App() {
   //   const items = localStorage.getItem("watched");
   //   setWatched(JSON.parse(items));
   // }, [])
-
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function fetchMovies() {
-
-      try {
-        setError("");
-        setIsLoading(true);
-        const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-          { signal: controller.signal }
-        );
-
-        if (res.status !== 200) throw new Error("Something went wrong");
-
-        const data = await res.json();
-
-        if (data.Search === undefined) throw new Error("Movie not found");
-        setMovies(data.Search)
-        setError("");
-
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          setError(err.message);
-        }
-      } finally {
-        setIsLoading(false)
-      }
-      // Because this effect will be executed on initial mount.. and the query length will be 0.
-    }
-    if (query.length < 3) {
-      setMovies([]);
-      setError("");
-      return;
-    }
-
-    nullSelectedId();
-    fetchMovies();
-
-    return function () {
-      controller.abort();
-    }
-  },
-    [query])
 
 
   return (
