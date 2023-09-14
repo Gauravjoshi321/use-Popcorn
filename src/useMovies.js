@@ -7,7 +7,7 @@ export function useMovies(query) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  useEffect(function () {
     const controller = new AbortController();
 
     async function fetchMovies() {
