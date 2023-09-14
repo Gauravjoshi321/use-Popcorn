@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import StarRating from "./star";
 import { useMovies } from "./useMovies";
 import { useLocalStorageState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 
 // const tempMovieData = [
 //   {
@@ -153,19 +154,12 @@ function SearchBar({ query, setQuery }) {
 
   const myRef = useRef(null);
 
-  useEffect(function () {
-    const fun = function (e) {
-      if (document.activeElement === myRef.current) return;
-      if (e.code === "Enter") {
-        setQuery('');
-        myRef.current.focus();
-      }
-    }
-    document.addEventListener('keydown', fun);
-    // myRef.current.focus();
+  useKey("Enter", function () {
+    if (document.activeElement === myRef.current) return;
+    myRef.current.focus();
+    setQuery('');
+  })
 
-    return function () { document.removeEventListener('keydown', fun) }
-  }, [setQuery])
 
   return <input
     className="search"
@@ -257,25 +251,12 @@ function MovieDetails({ selectedId, onCloseMovie, onHandleAllWatchedMovies, watc
   const isWatched = watched.map(w => w.imdbID).includes(selectedId);
 
   const countRef = useRef(0);
+
   useEffect(function () {
     if (userRating) countRef.current++;
   }, [userRating])
 
-  useEffect(function () {
-    const fun = function (e) {
-      if (e.code === "Escape") {
-        onCloseMovie();
-        console.log("CLOSING");
-      }
-    }
-
-    document.addEventListener('keydown', fun)
-
-    return function () {
-      document.removeEventListener('keydown', fun)
-    }
-  }, [onCloseMovie])
-
+  useKey("Escape", onCloseMovie);
 
   useEffect(function () {
 
